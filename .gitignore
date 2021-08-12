@@ -1,0 +1,14 @@
+# Module/Package Files
+go.sum
+
+# Executable Files
+*.exe
+
+# Database Files
+*.db
+*.sqlite3
+
+# Environment Files
+.env
+.env.example
+.env.local
