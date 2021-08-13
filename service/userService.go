@@ -1,113 +1,112 @@
-package users
+package service
 
 import (
-   // "fmt"
    "github.com/gofiber/fiber/v2"
+   "api/db"
+   "api/model"
 )
 
-var db = Connect("../test.db")
-
-func GetAllUsers(c *fiber.Ctx) error {
-   var users []User
+func GetUsers(ctx *fiber.Ctx) error {
+   var users []model.User
    // Retrieving all the users from the database
-   db.Find(&users)
+   db.DBConn.Find(&users)
    
    // Return the success response with the list of users;
-   return c.Status(200).JSON(fiber.Map{
+   return ctx.Status(200).JSON(fiber.Map{
       "success": true,
       "data": users,
    })
 }
 
-func GetUser(c *fiber.Ctx) error {
-   var user User
+func GetUser(ctx *fiber.Ctx) error {
+   var user model.User
    // Getting userId from the URL params
-   userId := c.Params("id")
+   userId := ctx.Params("id")
    
    // Finding the first instance of the user from the database
-   db.Find(&user, userId)
+   db.DBConn.Find(&user, userId)
    
    // Checking if user exists in the database
    if user.Email == "" {
-      return c.Status(404).SendString("User not available!")
+      return ctx.Status(404).SendString("User not available!")
    }
    
    // Returning the success response with the user data;
-   return c.Status(200).JSON(fiber.Map{
+   return ctx.Status(200).JSON(fiber.Map{
       "success": true,
       "data": user,
    })
 }
 
-func CreateUser(c *fiber.Ctx) error {
+func CreateUser(ctx *fiber.Ctx) error {
    // Creating new user object
-   user := new(User)
+   user := new(model.User)
    
    // Filling values coming from request body into above instance
    // Checking for any error
-   if err := c.BodyParser(&user); err != nil {
-      return c.Status(500).SendString(err.Error())
+   if err := ctx.BodyParser(&user); err != nil {
+      return ctx.Status(500).SendString(err.Error())
    }
    
    // Saving new user into the database
-   db.Create(&user)
+   db.DBConn.Create(&user)
    
    // Returning the response
-   return c.Status(200).JSON(fiber.Map{
+   return ctx.Status(200).JSON(fiber.Map{
       "success": true,
       "message": "User Created!",
    })
 }
 
-func UpdateUser(c *fiber.Ctx) error {
+func UpdateUser(ctx *fiber.Ctx) error {
    // Getting userId from the URL params
-   userId := c.Params("id")
+   userId := ctx.Params("id")
    
    // Creating new user object
-   user := new(User)
+   user := new(model.User)
    
    // Finding the user in the database
-   db.First(&user, userId)
+   db.DBConn.First(&user, userId)
    
    // Checking if user exists?
    if user.Email == "" {
-      return c.Status(404).SendString("User not found!")
+      return ctx.Status(404).SendString("User not found!")
    }
    
    // Filling values coming from request body into above user instance
    // Checking for any error!?
-   if err := c.BodyParser(&user); err != nil {
-      return c.Status(500).SendString(err.Error())
+   if err := ctx.BodyParser(&user); err != nil {
+      return ctx.Status(500).SendString(err.Error())
    }
    
    // Updating the user
-   db.Save(&user)
+   db.DBConn.Save(&user)
    
    // Returning the success response to the end user;
-   return c.Status(200).JSON(fiber.Map{
+   return ctx.Status(200).JSON(fiber.Map{
       "success": true,
       "message": "User updated!",
    })
 }
 
-func DeleteUser(c *fiber.Ctx) error {
-   var user User
+func DeleteUser(ctx *fiber.Ctx) error {
+   var user model.User
    // Getting userId from the URL params
-   userId := c.Params("id")
+   userId := ctx.Params("id")
    
    // Find the first instance of user from the database
-   db.First(&user, userId)
+   db.DBConn.First(&user, userId)
    
    // Checking if user exists!?
    if user.Email == "" {
-      return c.Status(404).SendString("User not found!")
+      return ctx.Status(404).SendString("User not found!")
    }
    
    // Deleting the particular user from the database
-   db.Delete(&user)
+   db.DBConn.Delete(&user)
    
    // Returning the success response to the end user;
-   return c.Status(200).JSON(fiber.Map{
+   return ctx.Status(200).JSON(fiber.Map{
       "success": true,
       "message": "User deleted!",
    })
