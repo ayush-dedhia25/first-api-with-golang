@@ -1,33 +1,25 @@
 package main
 
 import (
-   "fmt"
-   
    "github.com/gofiber/fiber/v2"
-   "gorm.io/gorm"
-   "gorm.io/driver/sqlite"
-   
-   "api/db"
+   "github.com/gofiber/fiber/v2/middleware/logger"
+   "api/database"
    "api/router"
-   "api/model"
 )
-
-func initDatabase() {
-   var err error
-   db.DBConn, err = gorm.Open(sqlite.Open("./store.db"), &gorm.Config{})
-   if err != nil {
-      panic("Failed to connect to database!")
-   }
-   db.DBConn.AutoMigrate(&model.User{})
-   fmt.Println("Database connection established!")
-}
 
 func main() {
    // Main Fiber Entry Part
    app := fiber.New()
    
+   // Middlewares
+   app.Use(logger.New(logger.Config{
+      Next: nil,
+      Format: "[${time}] ${status} - ${latency} ${method} ${path}\n",
+      TimeFormat: "15:04:05",
+   }))
+   
    // Initializing Database
-   initDatabase()
+   database.InitDatabase()
    
    // Routers Here...
    router.UserRoutes(app)

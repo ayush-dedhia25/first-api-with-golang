@@ -1,8 +1,9 @@
 package service
 
 import (
+   // "fmt"
    "github.com/gofiber/fiber/v2"
-   "api/db"
+   db "api/database"
    "api/model"
 )
 
@@ -48,14 +49,22 @@ func CreateUser(ctx *fiber.Ctx) error {
       return ctx.Status(500).SendString(err.Error())
    }
    
-   // Saving new user into the database
-   db.DBConn.Create(&user)
+   // Selecting the user from the database to see
+   // if is exists in the database
+   db.DBConn.Take(&user)
    
-   // Returning the response
-   return ctx.Status(200).JSON(fiber.Map{
-      "success": true,
-      "message": "User Created!",
-   })
+   // Saving new user into the database if the user doesn't exists!
+   if user.Email == "" {
+      db.DBConn.Create(&user)
+      
+      // Returning the response
+      return ctx.Status(200).JSON(fiber.Map{
+         "success": true,
+         "message": "User Created!",
+      })
+   }
+   
+   return ctx.Status(409).SendString("User already exists!")
 }
 
 func UpdateUser(ctx *fiber.Ctx) error {
@@ -106,7 +115,7 @@ func DeleteUser(ctx *fiber.Ctx) error {
    db.DBConn.Delete(&user)
    
    // Returning the success response to the end user;
-   return ctx.Status(200).JSON(fiber.Map{
+   return ctx.Status(204).JSON(fiber.Map{
       "success": true,
       "message": "User deleted!",
    })
