@@ -3,6 +3,7 @@ module api
 go 1.16
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/gofiber/fiber/v2 v2.16.0 // indirect
 	github.com/gofiber/storage/sqlite3 v0.0.0-20210602124502-f0233feaea00 // indirect
 	github.com/gofiber/template v1.6.14 // indirect
