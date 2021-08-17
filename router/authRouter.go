@@ -6,8 +6,8 @@ import (
 )
 
 func AuthRouter(app *fiber.App) {
-   auth := app.Group("/auth")
+   router := app.Group("/auth")
    
-   auth.Get("/login", service.Login)
-   auth.Get("/logout", service.Logout)
+   router.Get("/login", service.Login)
+   router.Get("/logout", service.Logout)
 }

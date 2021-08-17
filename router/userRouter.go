@@ -7,12 +7,12 @@ import (
 
 func UserRoutes(app *fiber.App) {
    // Grouping User Routes
-   userRoutes := app.Group("/users")
+   router := app.Group("/users")
    
    // Routes...
-   userRoutes.Get("/", service.GetUsers)
-   userRoutes.Get("/:id", service.GetUser)
-   userRoutes.Post("/", service.CreateUser)
-   userRoutes.Put("/:id", service.UpdateUser)
-   userRoutes.Delete("/:id", service.DeleteUser)
+   router.Get("/", service.GetUsers)
+   router.Get("/:id", service.GetUser)
+   router.Post("/", service.CreateUser)
+   router.Put("/:id", service.UpdateUser)
+   router.Delete("/:id", service.DeleteUser)
 }
